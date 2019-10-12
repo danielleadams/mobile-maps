@@ -150,7 +150,7 @@ const draw = function(idName, title, dataSet, gen, year, { primaryColor, accentC
   });
 };
 
-fetch("http://localhost:3000/data/coverage-2018.csv")
+fetch("https://radiant-plateau-81585.herokuapp.com/data/coverage-2018.csv")
   .then(response => response.text())
   .then((text) => {
     const coverageSets2018 = text.split("\n").map((country) => country.split(","));
