@@ -1,3 +1,6 @@
+http://www.mobileconnectivityindex.com/widgets/connectivityIndex/excel/MCI_Data_2019.xlsx
+	- coverage-2018.csv
+
 http://www.europarl.europa.eu/RegData/etudes/IDAN/2019/631060/IPOL_IDA(2019)631060_EN.pdf
 	- coverage-5G-2020.csv
 
@@ -13,7 +16,5 @@ https://www.gsma.com/r/mobileeconomy/asiapacific/
 44% oceania
 28% greater china
 8% south east asia
-7% south asia 
+7% south asia
 --> todo: represent this in map?
-
-

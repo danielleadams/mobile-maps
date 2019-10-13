@@ -170,7 +170,7 @@ const draw = function(idName, title, dataSet, gen, year, { primaryColor, accentC
   });
 };
 
-fetch("https://radiant-plateau-81585.herokuapp.com/data/coverage-2018.csv")
+fetch(`${dataPath}coverage-2018.csv`)
   .then(response => response.text())
   .then((text) => {
     const coverageSets2018 = text.split("\n").map((country) => country.split(","));
@@ -195,32 +195,36 @@ fetch("https://radiant-plateau-81585.herokuapp.com/data/coverage-2018.csv")
 
 // cities map
 const drawLatLongs = function(idName, title, dataSet, gen, year, { primaryColor, accentColor }) {
-  console.log(dataSet);
   Highcharts.mapChart(idName, {
     chart: {
       map: "custom/world"
     },
 
     title: {
-      text: `${title}: ${gen} in ${year}`
+      text: `${title} with ${gen} in ${year}`
+    },
+
+    legend: {
+      enabled: false
     },
 
     series: [{
-        mapData: Highcharts.maps['custom/world'],
-        name: 'Basemap',
-        borderColor: '#A0A0A0',
-        nullColor: 'rgba(200, 200, 200, 0.3)',
-        showInLegend: false
-      },{
+      mapData: Highcharts.maps['custom/world'],
+      name: 'Basemap',
+      borderColor: '#A0A0A0',
+      nullColor: 'rgba(200, 200, 200, 0.3)',
+      showInLegend: false
+    },{
       type: 'mappoint',
       name: title,
       data: dataSet,
       name: gen,
+      color: primaryColor
     }],
 
     tooltip: {
       headerFormat: "",
-      pointFormat: "{point.name}:</b><br>Lat:{point.lat}, Lon: {point.lon}",
+      pointFormat: "<b>{point.name}</b>",
       nullFormat: "Unavailable"
     }
   });
@@ -260,8 +264,9 @@ const p3 = fetch(`${dataPath}coverage-5G-US-expansion.csv`)
     });
   });
 
+
+
 Promise.all([p1, p2, p3])
     .then((x) => {
-      drawLatLongs('container-map-2g-2014', "Cities", data, "5G", 2020, { primaryColor: "#3f51b5", accentColor:  "#002984" });
+      drawLatLongs('container-map-5g', "Cities", data, "5G", 2020, { primaryColor: "#ff9800" });
     });
-
