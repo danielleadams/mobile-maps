@@ -8,6 +8,7 @@
   na -> North America
   sa -> Latin America & Caribbean
 */
+const dataPath = 'https://radiant-plateau-81585.herokuapp.com/data/';
 
 // https://fbnewsroomus.files.wordpress.com/2015/02/state-of-connectivity_3.pdf
 const TwoG2014 = [
@@ -44,6 +45,25 @@ const FourG2017 = [
   { code: 'as', regionName: "South Asia", value: 82 },
   { code: 'na', regionName: "North America", value: 98 },
   { code: 'sa', regionName: "Latin America & Caribbean", value: 82 }
+];
+
+// 5G action plans -http://www.europarl.europa.eu/RegData/etudes/IDAN/2019/631060/IPOL_IDA(2019)631060_EN.pdf
+const FiveG2025 = [
+  { code: 'USA', regionName: "USA" },
+  { code: 'TWN', regionName: "Taiwan" },
+  { code: 'SGP', regionName: "Singapore" },
+  { code: 'KOR', regionName: "Korea" },
+  { code: 'JPN', regionName: "Japan" },
+  { code: 'CHN', regionName: "China" },
+  { code: 'AUT', regionName: "Austria" },
+  { code: 'FRA', regionName: "France" },
+  { code: 'FIN', regionName: "Finland" },
+  { code: 'NLD', regionName: "Netherlands" },
+  { code: 'ESP', regionName: "Spain" },
+  { code: 'SWE', regionName: "Sweden" },
+  { code: 'DEU', regionName: "Germany" },
+  { code: 'LUX', regionName: "Luxemburg" },
+  { code: 'GBR', regionName: "UK" }
 ];
 
 const config = function(title, data, gen, year, { mapType, primaryColor, accentColor }) {
@@ -150,7 +170,7 @@ const draw = function(idName, title, dataSet, gen, year, { primaryColor, accentC
   });
 };
 
-fetch("https://radiant-plateau-81585.herokuapp.com/data/coverage-2018.csv")
+fetch(`${dataPath}coverage-2018.csv`)
   .then(response => response.text())
   .then((text) => {
     const coverageSets2018 = text.split("\n").map((country) => country.split(","));
@@ -171,3 +191,82 @@ fetch("https://radiant-plateau-81585.herokuapp.com/data/coverage-2018.csv")
     draw('container-map-3g-2018', "% of Population Covered by Country", data3G, "3G", 2018, { primaryColor: "#9c27b0", accentColor: "#6a0080" });
     draw('container-map-4g-2018', "% of Population Covered by Country", data4G, "4G", 2018, { primaryColor: "#4caf50", accentColor: "#087f23" });
   });
+
+
+// cities map
+const drawLatLongs = function(idName, title, dataSet, gen, year, { primaryColor, accentColor }) {
+  Highcharts.mapChart(idName, {
+    chart: {
+      map: "custom/world"
+    },
+
+    title: {
+      text: `${title} with ${gen} in ${year}`
+    },
+
+    legend: {
+      enabled: false
+    },
+
+    series: [{
+      mapData: Highcharts.maps['custom/world'],
+      name: 'Basemap',
+      borderColor: '#A0A0A0',
+      nullColor: 'rgba(200, 200, 200, 0.3)',
+      showInLegend: false
+    },{
+      type: 'mappoint',
+      name: title,
+      data: dataSet,
+      name: gen,
+      color: primaryColor
+    }],
+
+    tooltip: {
+      headerFormat: "",
+      pointFormat: "<b>{point.name}</b>",
+      nullFormat: "Unavailable"
+    }
+  });
+};
+
+let data = [];
+const p1 = fetch(`${dataPath}coverage-5G-2020.csv`)
+  .then(response => response.text())
+  .then((text) => {
+    const cities = text.split("\n").map((city) => city.split(","));
+    cities.map(c => {
+      if (c[0] !== "") {
+        data = data.concat( { name: c[0], lat: parseFloat(c[1]), lon: parseFloat(c[2]) } );
+      }
+    });
+  });
+
+const p2 = fetch(`${dataPath}coverage-5G-US.csv`)
+  .then(response => response.text())
+  .then((text) => {
+    const cities = text.split("\n").map((city) => city.split(","));
+    cities.map(c => {
+      if (c[0] !== "") {
+        data.push( { name: c[0], lat: parseFloat(c[1]), lon: parseFloat(c[2]) } );
+      }
+    });
+  });
+
+const p3 = fetch(`${dataPath}coverage-5G-US-expansion.csv`)
+  .then(response => response.text())
+  .then((text) => {
+    const cities = text.split("\n").map((city) => city.split(","));
+    cities.map(c => {
+      if (c[0] !== "") {
+        data.push( { name: c[0], lat: parseFloat(c[1]), lon: parseFloat(c[2]) } );
+      }
+    });
+  });
+
+
+
+Promise.all([p1, p2, p3])
+    .then((x) => {
+      drawLatLongs('container-map-5g', "Cities", data, "5G", 2020, { primaryColor: "#ff9800" });
+    });
